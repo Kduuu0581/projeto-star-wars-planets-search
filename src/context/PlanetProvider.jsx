@@ -4,7 +4,8 @@ import PlanetContext from './PlanetContext';
 
 function PlanetProvider({ children }) {
   const [planets, setPlanets] = useState([]);
-  const values = { planets, setPlanets };
+  const [searchName, setSearchName] = useState('');
+  const values = { planets, setPlanets, searchName, setSearchName };
   return (
     <PlanetContext.Provider value={ values }>
       {children}
