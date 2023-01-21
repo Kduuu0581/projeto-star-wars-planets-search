@@ -2,8 +2,42 @@ import React, { useContext } from 'react';
 import PlanetContext from '../context/PlanetContext';
 
 function Table() {
-  const { planets, searchName, setSearchName } = useContext(PlanetContext);
+  const { planets,
+    searchName,
+    setSearchName,
+    searchColumn,
+    setSearchColumn,
+    searchComparison,
+    setComparison,
+    searchValue,
+    setSearchValue,
+    searchNumericFilters,
+    setNumericFilters,
+  } = useContext(PlanetContext);
+
   const filteredPlanets = planets.filter((planet) => planet.name.includes(searchName));
+
+  const handleNumericFilter = () => {
+    const resultNumericFilter = planets.filter((planet) => {
+      if (searchComparison === 'maior que') {
+        return Number(planet[searchColumn]) > searchValue;
+      }
+      if (searchComparison === 'menor que') {
+        return Number(planet[searchColumn]) < searchValue;
+      }
+      if (searchComparison === 'igual a') {
+        return Number(planet[searchColumn]) === Number(searchValue);
+      }
+      return planet;
+    });
+    setNumericFilters(resultNumericFilter);
+  };
+
+  const optionColumnFilter = ['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water'];
+  const optionComparisonFilter = ['maior que', 'menor que', 'igual a'];
+  const renderPlanets = searchNumericFilters.length === 0
+    ? filteredPlanets : searchNumericFilters;
 
   return (
     <div>
@@ -20,6 +54,46 @@ function Table() {
             placeholder="Digite o nome do planeta"
           />
         </label>
+      </div>
+      <div>
+        <select
+          name="column-filter"
+          data-testid="column-filter"
+          onChange={ (element) => setSearchColumn(element.target.value) }
+        >
+          {
+            optionColumnFilter.map((option) => (
+              <option key={ option } value={ option }>{option}</option>
+            ))
+          }
+        </select>
+        <select
+          name="comparison-filter"
+          data-testid="comparison-filter"
+          onChange={ (element) => setComparison(element.target.value) }
+        >
+          {
+            optionComparisonFilter.map((option) => (
+              <option key={ option } value={ option }>{option}</option>
+            ))
+          }
+        </select>
+        <label htmlFor="value-filter">
+          <input
+            type="number"
+            name="value-filter"
+            data-testid="value-filter"
+            value={ searchValue }
+            onChange={ (element) => setSearchValue(element.target.value) }
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="button-filter"
+          onClick={ () => handleNumericFilter() }
+        >
+          Filtrar
+        </button>
       </div>
       <table>
         <thead>
@@ -40,7 +114,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {filteredPlanets.map((planet, index) => (
+          {renderPlanets.map((planet, index) => (
             <tr key={ index }>
               <td>{planet.name}</td>
               <td>{planet.rotation_period}</td>
