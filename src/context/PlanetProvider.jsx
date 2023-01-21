@@ -9,6 +9,7 @@ function PlanetProvider({ children }) {
   const [searchComparison, setComparison] = useState('maior que');
   const [searchValue, setSearchValue] = useState(0);
   const [searchNumericFilters, setNumericFilters] = useState([]);
+  const [filters, setFilters] = useState(false);
   const values = { planets,
     setPlanets,
     searchName,
@@ -21,6 +22,8 @@ function PlanetProvider({ children }) {
     setSearchValue,
     searchNumericFilters,
     setNumericFilters,
+    filters,
+    setFilters,
   };
   return (
     <PlanetContext.Provider value={ values }>

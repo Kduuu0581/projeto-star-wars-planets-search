@@ -13,6 +13,8 @@ function Table() {
     setSearchValue,
     searchNumericFilters,
     setNumericFilters,
+    filters,
+    setFilters,
   } = useContext(PlanetContext);
 
   const filteredPlanets = planets.filter((planet) => planet.name.includes(searchName));
@@ -31,6 +33,23 @@ function Table() {
       return planet;
     });
     setNumericFilters(resultNumericFilter);
+    setFilters(true);
+  };
+
+  const handleIsNumericFilter = () => {
+    const resultIsNumericFilter = searchNumericFilters.filter((planet) => {
+      if (searchComparison === 'maior que') {
+        return Number(planet[searchColumn]) > searchValue;
+      }
+      if (searchComparison === 'menor que') {
+        return Number(planet[searchColumn]) < searchValue;
+      }
+      if (searchComparison === 'igual a') {
+        return Number(planet[searchColumn]) === Number(searchValue);
+      }
+      return planet;
+    });
+    setNumericFilters(resultIsNumericFilter);
   };
 
   const optionColumnFilter = ['population', 'orbital_period',
@@ -90,7 +109,7 @@ function Table() {
         <button
           type="button"
           data-testid="button-filter"
-          onClick={ () => handleNumericFilter() }
+          onClick={ filters ? handleIsNumericFilter : handleNumericFilter }
         >
           Filtrar
         </button>
