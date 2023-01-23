@@ -233,37 +233,37 @@ const mockaPlanets = {
 describe("Teste Star Wars", () => {
   test("1- O título é renderizado", () => {
     render(<App />);
-    const titleElement = screen.getByRole('heading', { name: /star wars/i });
+    const titleElement = screen.getByRole("heading", { name: /star wars/i });
     expect(titleElement).toBeInTheDocument();
   });
 
   test("2- É encontrado o input search", () => {
     render(<App />);
-    const inputSearch = screen.getByRole('textbox');
+    const inputSearch = screen.getByRole("textbox");
     expect(inputSearch).toBeInTheDocument();
   });
 
   test("3- Renderiza título da tabela", () => {
     render(<App />);
-    const tableTitle = screen.getByRole('columnheader', { name: /name/i });
+    const tableTitle = screen.getByRole("columnheader", { name: /name/i });
     expect(tableTitle).toBeInTheDocument();
   });
 
   test("4- Renderiza tabela", async () => {
-    jest.spyOn(global, 'fetch')
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets)
-    })
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     render(<App />);
-    const table = screen.getByRole('table');
+    const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
   });
 
   test("5- Testa chamada da API", async () => {
-    jest.spyOn(global, 'fetch')
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets)
-    })
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     await act(async () => {
       render(<App />);
     });
@@ -271,74 +271,136 @@ describe("Teste Star Wars", () => {
   });
 
   test("6- Testa se a tabela renderiza 11 linhas", async () => {
-    jest.spyOn(global, 'fetch')
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets)
-    })
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     await act(async () => {
       render(<App />);
     });
-    const table = screen.getByRole('table');
+    const table = screen.getByRole("table");
     expect(table.rows.length).toBe(11);
   });
 
   test("7- Testa se renderiza o nome do primeiro planeta na tabela", async () => {
-    jest.spyOn(global, 'fetch')
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets)
-    })
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     await act(async () => {
       render(<App />);
     });
-    const table = screen.getByRole('table');
-    expect(table.rows[1].cells[0]).toHaveTextContent('Tatooine');
+    const table = screen.getByRole("table");
+    expect(table.rows[1].cells[0]).toHaveTextContent("Tatooine");
   });
 
   test("8- É encontrado o input search planets by name ", async () => {
-    jest.spyOn(global, 'fetch')
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets)
-    })
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     await act(async () => {
       render(<App />);
     });
-    const inputSearch = screen.getByRole('textbox');
+    const inputSearch = screen.getByRole("textbox");
     expect(inputSearch).toBeInTheDocument();
-    userEvent.type(inputSearch, 'Tatooine');
+    userEvent.type(inputSearch, "Tatooine");
   });
 
   test("10- Testa funcionamento do filtro search planets by name", async () => {
-    jest.spyOn(global, 'fetch')
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets)
-    })
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     await act(async () => {
       render(<App />);
     });
-    const inputSearch = await screen.findByTestId('name-filter');
-    userEvent.type(inputSearch, 'h');
-    expect(await screen.findAllByTestId('planet-name')).toHaveLength(2);
+    const inputSearch = await screen.findByTestId("name-filter");
+    userEvent.type(inputSearch, "h");
+    expect(await screen.findAllByTestId("planet-name")).toHaveLength(2);
   });
 
   test("11- Testa os múltiplos filtros", async () => {
-    jest.spyOn(global, 'fetch')
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets)
-    })
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     await act(async () => {
       render(<App />);
     });
-    const selectColumn = await screen.findByTestId('column-filter');
+    const selectColumn = await screen.findByTestId("column-filter");
     expect(selectColumn).toBeInTheDocument();
-    userEvent.selectOptions(selectColumn, 'population');
-    const selectComparison = await screen.findByTestId('comparison-filter');
+    userEvent.selectOptions(selectColumn, ["population"]);
+    const selectComparison = await screen.findByTestId("comparison-filter");
     expect(selectComparison).toBeInTheDocument();
-    userEvent.selectOptions(selectComparison, 'maior que');
-    const inputNumber = await screen.findByTestId('value-filter');
-    expect(inputNumber).toBeInTheDocument();  
-    userEvent.type(inputNumber, '1000000000');
-    const buttonFilter = await screen.findByTestId('button-filter');
+    userEvent.selectOptions(selectComparison, "maior que");
+    const inputNumber = await screen.findByTestId("value-filter");
+    expect(inputNumber).toBeInTheDocument();
+    userEvent.type(inputNumber, "1000000000");
+    const buttonFilter = await screen.findByTestId("button-filter");
     expect(buttonFilter).toBeInTheDocument();
     userEvent.click(buttonFilter);
+  });
+
+  test("12- Testa ordem ascendente e descendete", async () => {
+    jest.spyOn(global, 'fetch');
+    global.fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+  });
+    await act(async () => {
+      render(<App />);
+    });
+    const selectOrder = await screen.findByTestId("column-sort");
+    expect(selectOrder).toBeInTheDocument();
+    userEvent.selectOptions(selectOrder, ["population"]);
+    const selectDesc = await screen.findByTestId("column-sort-input-desc");
+    expect(selectDesc).toBeInTheDocument();
+    userEvent.click(selectDesc);
+    const selectAsc = await screen.findByTestId("column-sort-input-asc");
+    expect(selectAsc).toBeInTheDocument();
+    userEvent.click(selectAsc);
+    const orderButton = await screen.findByTestId("column-sort-button");
+    expect(orderButton).toBeInTheDocument();
+    userEvent.click(orderButton);
+  });
+
+  test("13- Teste de filtros", async () => {
+    jest.spyOn(global, 'fetch')
+    global.fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
+    await act(async () => {
+      render(<App />);
+    });
+    const selectColumn = await screen.findByTestId("column-filter");
+    expect(selectColumn).toBeInTheDocument();
+    userEvent.selectOptions(selectColumn, ["diameter"]);
+    const selectComparison = await screen.findByTestId("comparison-filter");
+    expect(selectColumn).toBeInTheDocument();
+    userEvent.selectOptions(selectComparison, ["maior que"]);
+    const inputNumber = await screen.findByTestId("value-filter");
+    expect(inputNumber).toBeInTheDocument();
+    userEvent.type(inputNumber, "10000");
+    const buttonFilter = await screen.findByTestId("button-filter");
+    userEvent.click(buttonFilter);
+
+    userEvent.selectOptions(selectColumn, ["population"]);
+    userEvent.selectOptions(selectComparison, ["igual a"]);
+    userEvent.type(inputNumber, "100000");
+    userEvent.click(buttonFilter);
+
+    userEvent.selectOptions(selectColumn, ["rotation_period"]);
+    userEvent.selectOptions(selectComparison, ["menor que"]);
+    userEvent.type(inputNumber, "30");
+    userEvent.click(buttonFilter);
+
+    const selectAsc = await screen.findByTestId("column-sort-input-asc");
+    expect(selectAsc).toBeInTheDocument();
+    userEvent.click(selectAsc);
+
+    const orderButton = await screen.findByTestId("column-sort-button");
+    expect(orderButton).toBeInTheDocument();
+    userEvent.click(orderButton);
+    
   });
 });
