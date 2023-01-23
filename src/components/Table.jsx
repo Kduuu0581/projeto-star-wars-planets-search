@@ -59,7 +59,7 @@ function Table() {
     setNumericFilters(resultIsNumericFilter);
     setOptionColumnsFilter(optionColumnsFilter
       .filter((option) => option !== searchColumn));
-    setSearchColumn(optionsColumnFilter
+    setSearchColumn(optionColumnsFilter
       .filter((option) => option !== searchColumn)[0]);
   };
 
@@ -145,7 +145,7 @@ function Table() {
         <tbody>
           {renderPlanets.map((planet, index) => (
             <tr key={ index }>
-              <td>{planet.name}</td>
+              <td data-testid="planet-name">{planet.name}</td>
               <td>{planet.rotation_period}</td>
               <td>{planet.orbital_period}</td>
               <td>{planet.diameter}</td>
