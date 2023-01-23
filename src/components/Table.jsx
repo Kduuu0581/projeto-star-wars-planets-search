@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import PlanetContext from '../context/PlanetContext';
+import Order from './Order';
 
 function Table() {
   const { planets,
@@ -17,6 +18,9 @@ function Table() {
     setFilters,
     optionColumnsFilter,
     setOptionColumnsFilter,
+    selectFilter,
+    setSelectFilter,
+    isOrder,
   } = useContext(PlanetContext);
 
   const filteredPlanets = planets.filter((planet) => planet.name.includes(searchName));
@@ -25,12 +29,15 @@ function Table() {
   const handleNumericFilter = () => {
     const resultNumericFilter = planets.filter((planet) => {
       if (searchComparison === 'maior que') {
+        setSelectFilter([...selectFilter, searchColumn]);
         return Number(planet[searchColumn]) > searchValue;
       }
       if (searchComparison === 'menor que') {
+        setSelectFilter([...selectFilter, searchColumn]);
         return Number(planet[searchColumn]) < searchValue;
       }
       if (searchComparison === 'igual a') {
+        setSelectFilter([...selectFilter, searchColumn]);
         return Number(planet[searchColumn]) === Number(searchValue);
       }
       return planet;
@@ -46,12 +53,15 @@ function Table() {
   const handleIsNumericFilter = () => {
     const resultIsNumericFilter = searchNumericFilters.filter((planet) => {
       if (searchComparison === 'maior que') {
+        setSelectFilter([...selectFilter, searchColumn]);
         return Number(planet[searchColumn]) > searchValue;
       }
       if (searchComparison === 'menor que') {
+        setSelectFilter([...selectFilter, searchColumn]);
         return Number(planet[searchColumn]) < searchValue;
       }
       if (searchComparison === 'igual a') {
+        setSelectFilter([...selectFilter, searchColumn]);
         return Number(planet[searchColumn]) === Number(searchValue);
       }
       return planet;
@@ -63,8 +73,10 @@ function Table() {
       .filter((option) => option !== searchColumn)[0]);
   };
 
-  // const optionColumnFilter = ['population', 'orbital_period',
-  //   'diameter', 'rotation_period', 'surface_water'];
+  const handleDelete = (element) => {
+    setOptionColumnsFilter([...optionColumnsFilter, element.target.name]);
+  };
+
   const renderPlanets = searchNumericFilters.length === 0
     ? filteredPlanets : searchNumericFilters;
 
@@ -124,6 +136,25 @@ function Table() {
           Filtrar
         </button>
       </div>
+      <Order />
+      <div>
+        <ul>
+          {
+            selectFilter.map((filter, index) => (
+              <li key={ index } data-testid="filter">
+                {filter}
+                <button
+                  data-testid="filter"
+                  name={ filter }
+                  onClick={ (element) => handleDelete(element) }
+                >
+                  Excluir
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
       <table>
         <thead>
           <tr>
@@ -142,25 +173,48 @@ function Table() {
             <th>URL</th>
           </tr>
         </thead>
-        <tbody>
-          {renderPlanets.map((planet, index) => (
-            <tr key={ index }>
-              <td data-testid="planet-name">{planet.name}</td>
-              <td>{planet.rotation_period}</td>
-              <td>{planet.orbital_period}</td>
-              <td>{planet.diameter}</td>
-              <td>{planet.climate}</td>
-              <td>{planet.gravity}</td>
-              <td>{planet.terrain}</td>
-              <td>{planet.surface_water}</td>
-              <td>{planet.population}</td>
-              <td>{planet.films}</td>
-              <td>{planet.created}</td>
-              <td>{planet.edited}</td>
-              <td>{planet.url}</td>
-            </tr>
-          ))}
-        </tbody>
+        { !isOrder && (
+          <tbody>
+            {renderPlanets.map((planet, index) => (
+              <tr key={ index }>
+                <td data-testid="planet-name">{planet.name}</td>
+                <td>{planet.rotation_period}</td>
+                <td>{planet.orbital_period}</td>
+                <td>{planet.diameter}</td>
+                <td>{planet.climate}</td>
+                <td>{planet.gravity}</td>
+                <td>{planet.terrain}</td>
+                <td>{planet.surface_water}</td>
+                <td>{planet.population}</td>
+                <td>{planet.films}</td>
+                <td>{planet.created}</td>
+                <td>{planet.edited}</td>
+                <td>{planet.url}</td>
+              </tr>
+            ))}
+          </tbody>
+        )}
+        { isOrder && (
+          <tbody>
+            {planets.map((planet, index) => (
+              <tr key={ index }>
+                <td data-testid="planet-name">{planet.name}</td>
+                <td>{planet.rotation_period}</td>
+                <td>{planet.orbital_period}</td>
+                <td>{planet.diameter}</td>
+                <td>{planet.climate}</td>
+                <td>{planet.gravity}</td>
+                <td>{planet.terrain}</td>
+                <td>{planet.surface_water}</td>
+                <td>{planet.population}</td>
+                <td>{planet.films}</td>
+                <td>{planet.created}</td>
+                <td>{planet.edited}</td>
+                <td>{planet.url}</td>
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
     </div>
   );

@@ -13,6 +13,11 @@ function PlanetProvider({ children }) {
   const [optionColumnsFilter, setOptionColumnsFilter] = useState(
     ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
   );
+  const [selectFilter, setSelectFilter] = useState([]);
+  const [isOrder, setIsOrder] = useState(false);
+  const [orderFilter, setOrderFilter] = useState({
+    order: { column: 'population', sort: 'ASC' },
+  });
   const values = { planets,
     setPlanets,
     searchName,
@@ -29,6 +34,12 @@ function PlanetProvider({ children }) {
     setFilters,
     optionColumnsFilter,
     setOptionColumnsFilter,
+    selectFilter,
+    setSelectFilter,
+    isOrder,
+    setIsOrder,
+    orderFilter,
+    setOrderFilter,
   };
   return (
     <PlanetContext.Provider value={ values }>
