@@ -15,9 +15,12 @@ function Table() {
     setNumericFilters,
     filters,
     setFilters,
+    optionColumnsFilter,
+    setOptionColumnsFilter,
   } = useContext(PlanetContext);
 
   const filteredPlanets = planets.filter((planet) => planet.name.includes(searchName));
+  const optionComparisonFilter = ['maior que', 'menor que', 'igual a'];
 
   const handleNumericFilter = () => {
     const resultNumericFilter = planets.filter((planet) => {
@@ -34,6 +37,10 @@ function Table() {
     });
     setNumericFilters(resultNumericFilter);
     setFilters(true);
+    setOptionColumnsFilter(optionColumnsFilter
+      .filter((option) => option !== searchColumn));
+    setSearchColumn(optionColumnsFilter
+      .filter((option) => option !== searchColumn)[0]);
   };
 
   const handleIsNumericFilter = () => {
@@ -50,11 +57,14 @@ function Table() {
       return planet;
     });
     setNumericFilters(resultIsNumericFilter);
+    setOptionColumnsFilter(optionColumnsFilter
+      .filter((option) => option !== searchColumn));
+    setSearchColumn(optionsColumnFilter
+      .filter((option) => option !== searchColumn)[0]);
   };
 
-  const optionColumnFilter = ['population', 'orbital_period',
-    'diameter', 'rotation_period', 'surface_water'];
-  const optionComparisonFilter = ['maior que', 'menor que', 'igual a'];
+  // const optionColumnFilter = ['population', 'orbital_period',
+  //   'diameter', 'rotation_period', 'surface_water'];
   const renderPlanets = searchNumericFilters.length === 0
     ? filteredPlanets : searchNumericFilters;
 
@@ -81,7 +91,7 @@ function Table() {
           onChange={ (element) => setSearchColumn(element.target.value) }
         >
           {
-            optionColumnFilter.map((option) => (
+            optionColumnsFilter.map((option) => (
               <option key={ option } value={ option }>{option}</option>
             ))
           }

@@ -10,6 +10,9 @@ function PlanetProvider({ children }) {
   const [searchValue, setSearchValue] = useState(0);
   const [searchNumericFilters, setNumericFilters] = useState([]);
   const [filters, setFilters] = useState(false);
+  const [optionColumnsFilter, setOptionColumnsFilter] = useState(
+    ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
+  );
   const values = { planets,
     setPlanets,
     searchName,
@@ -24,6 +27,8 @@ function PlanetProvider({ children }) {
     setNumericFilters,
     filters,
     setFilters,
+    optionColumnsFilter,
+    setOptionColumnsFilter,
   };
   return (
     <PlanetContext.Provider value={ values }>
