@@ -312,6 +312,27 @@ describe("Teste Star Wars", () => {
     global.fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockaPlanets),
     });
+
+    render(<App />);
+
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole("cell", { name: /tatooine/i })
+        ).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+    const inputSearch = screen.getByRole("textbox");
+    expect(inputSearch).toBeInTheDocument();
+    userEvent.type(inputSearch, "d");
+  });
+
+  test("11- Testa o filtro search planets by name", async () => {
+    jest.spyOn(global, "fetch");
+    global.fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
     await act(async () => {
       render(<App />);
     });
@@ -320,7 +341,7 @@ describe("Teste Star Wars", () => {
     expect(await screen.findAllByTestId("planet-name")).toHaveLength(2);
   });
 
-  test("11- Testa os múltiplos filtros", async () => {
+  test("12- Teste se encontra o botão Filtrar", async () => {
     jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockaPlanets),
@@ -328,79 +349,127 @@ describe("Teste Star Wars", () => {
     await act(async () => {
       render(<App />);
     });
-    const selectColumn = await screen.findByTestId("column-filter");
-    expect(selectColumn).toBeInTheDocument();
-    userEvent.selectOptions(selectColumn, ["population"]);
-    const selectComparison = await screen.findByTestId("comparison-filter");
-    expect(selectComparison).toBeInTheDocument();
-    userEvent.selectOptions(selectComparison, "maior que");
-    const inputNumber = await screen.findByTestId("value-filter");
-    expect(inputNumber).toBeInTheDocument();
-    userEvent.type(inputNumber, "1000000000");
-    const buttonFilter = await screen.findByTestId("button-filter");
+    const buttonFilter = await screen.findByRole("button", {
+      name: /filtrar/i,
+    });
+    expect(buttonFilter).toBeInTheDocument();
+  });
+
+  test("13- Testa o sort, inputs e botão", async () => {
+    jest.spyOn(global, "fetch");
+    global.fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
+    render(<App />);
+    const sortButton = await screen.findByTestId('column-sort-button');
+    expect(sortButton).toBeInTheDocument();
+    userEvent.click(sortButton);
+
+    const radioAsc = screen.getByText(/ascendente/i);
+    expect(radioAsc).toBeInTheDocument();
+    userEvent.click(radioAsc);
+
+    const radioDesc = screen.getByText(/descendente/i);
+    expect(radioDesc).toBeInTheDocument();
+    userEvent.click(radioDesc);
+
+    const optionColumn = await screen.findByTestId('column-sort');
+    expect(optionColumn).toBeInTheDocument();
+    userEvent.selectOptions(optionColumn, ['population']);
+
+    const buttonFilter = await screen.findByRole("button", {
+      name: /filtrar/i,
+    });
+    expect(buttonFilter).toBeInTheDocument();
+    userEvent.click(buttonFilter);
+
+    expect((await screen.findAllByTestId('planet-name'))[0]).toHaveTextContent('Tatooine');
+  });
+
+  test("14- Testa múltiplos filtros", async () => {
+    jest.spyOn(global, "fetch");
+    global.fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
+    await act(async () => {
+      render(<App />);
+    });
+    const columnSelect = await screen.findByTestId('column-filter');
+    expect(columnSelect).toBeInTheDocument();
+    userEvent.selectOptions(columnSelect, ["diameter"]);
+    userEvent.type(columnSelect, '10000');
+    
+    const comparisonSelect = await screen.findByTestId('comparison-filter');
+    expect(comparisonSelect).toBeInTheDocument();
+    userEvent.selectOptions(comparisonSelect, ["maior que"]);
+
+    const valueInput = await screen.findByTestId('value-filter');
+    expect(valueInput).toBeInTheDocument();
+    userEvent.type(valueInput, '10000');
+
+    const buttonFilter = await screen.findByTestId('button-filter');
     expect(buttonFilter).toBeInTheDocument();
     userEvent.click(buttonFilter);
   });
 
-  test("12- Testa ordem ascendente e descendete", async () => {
-    jest.spyOn(global, 'fetch');
-    global.fetch.mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockaPlanets),
-  });
-    await act(async () => {
-      render(<App />);
-    });
-    const selectOrder = await screen.findByTestId("column-sort");
-    expect(selectOrder).toBeInTheDocument();
-    userEvent.selectOptions(selectOrder, ["population"]);
-    const selectDesc = await screen.findByTestId("column-sort-input-desc");
-    expect(selectDesc).toBeInTheDocument();
-    userEvent.click(selectDesc);
-    const selectAsc = await screen.findByTestId("column-sort-input-asc");
-    expect(selectAsc).toBeInTheDocument();
-    userEvent.click(selectAsc);
-    const orderButton = await screen.findByTestId("column-sort-button");
-    expect(orderButton).toBeInTheDocument();
-    userEvent.click(orderButton);
-  });
-
-  test("13- Teste de filtros", async () => {
-    jest.spyOn(global, 'fetch')
+  test("15- Testa ordenação da coluna", async () => {
+    jest.spyOn(global, "fetch");
     global.fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(mockaPlanets),
     });
     await act(async () => {
       render(<App />);
     });
-    const selectColumn = await screen.findByTestId("column-filter");
-    expect(selectColumn).toBeInTheDocument();
-    userEvent.selectOptions(selectColumn, ["diameter"]);
-    const selectComparison = await screen.findByTestId("comparison-filter");
-    expect(selectColumn).toBeInTheDocument();
-    userEvent.selectOptions(selectComparison, ["maior que"]);
-    const inputNumber = await screen.findByTestId("value-filter");
-    expect(inputNumber).toBeInTheDocument();
-    userEvent.type(inputNumber, "10000");
-    const buttonFilter = await screen.findByTestId("button-filter");
+
+    const columnSelect = await screen.findByTestId('column-sort');
+    expect(columnSelect).toBeInTheDocument();
+
+    const descSelect = await screen.findByTestId('column-sort-input-desc');
+    expect(descSelect).toBeInTheDocument();
+
+    const buttonFilter = await screen.findByTestId('column-sort-button');
+    expect(buttonFilter).toBeInTheDocument();
+
+    userEvent.selectOptions(columnSelect, ["diameter"]);
+    userEvent.click(descSelect);
     userEvent.click(buttonFilter);
 
-    userEvent.selectOptions(selectColumn, ["population"]);
-    userEvent.selectOptions(selectComparison, ["igual a"]);
-    userEvent.type(inputNumber, "100000");
+    const ascSelect = await screen.findByTestId('column-sort-input-asc');
+    expect(ascSelect).toBeInTheDocument();
+
+    userEvent.selectOptions(columnSelect, ["population"]);
+    userEvent.click(ascSelect);
     userEvent.click(buttonFilter);
+  })
 
-    userEvent.selectOptions(selectColumn, ["rotation_period"]);
-    userEvent.selectOptions(selectComparison, ["menor que"]);
-    userEvent.type(inputNumber, "30");
-    userEvent.click(buttonFilter);
+  test("16- Teste de filtros", async () => {
+    jest.spyOn(global, "fetch");
+    global.fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(mockaPlanets),
+    });
+    await act(async () => {
+      render(<App />);
+    });
 
-    const selectAsc = await screen.findByTestId("column-sort-input-asc");
-    expect(selectAsc).toBeInTheDocument();
-    userEvent.click(selectAsc);
+    const filterColumn = await screen.findByTestId('column-filter');
+    expect(filterColumn).toBeInTheDocument();
 
-    const orderButton = await screen.findByTestId("column-sort-button");
-    expect(orderButton).toBeInTheDocument();
-    userEvent.click(orderButton);
-    
+    const filterComparison = await screen.findByTestId('comparison-filter');
+    expect(filterColumn).toBeInTheDocument();
+
+    const filterValue = await screen.findByTestId('value-filter');
+    expect(filterValue).toBeInTheDocument();
+
+    const filterButton = await screen.findByTestId('button-filter');
+
+    userEvent.selectOptions(filterColumn, ["diameter"]);
+    userEvent.selectOptions(filterComparison, ["maior que"]);
+    userEvent.type(filterValue, 1000);
+    userEvent.click(filterButton);
+
+    userEvent.selectOptions(filterColumn, ["population"]);
+    userEvent.selectOptions(filterComparison, ["igual a"]);
+    userEvent.type(filterValue, 1000);
+    userEvent.click(filterButton);
   });
 });
